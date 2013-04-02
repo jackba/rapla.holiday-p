@@ -1,0 +1,128 @@
+package org.rapla.plugin.freetime;
+
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.rapla.components.layout.TableLayout;
+import org.rapla.components.util.DateTools;
+import org.rapla.entities.domain.Appointment;
+import org.rapla.entities.domain.AppointmentBlock;
+import org.rapla.entities.domain.Repeating;
+import org.rapla.entities.domain.Reservation;
+import org.rapla.framework.RaplaContext;
+import org.rapla.framework.RaplaException;
+import org.rapla.gui.RaplaGUIComponent;
+import org.rapla.gui.ReservationCheck;
+import org.rapla.gui.internal.view.ConflictInfoOldUI;
+import org.rapla.gui.toolkit.DialogUI;
+
+
+public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {
+
+    public FreetimeReservationSaveCheck(RaplaContext context) throws RaplaException {
+        super(context);
+        setChildBundleName(FreetimePlugin.RESOURCE_FILE);
+    }
+
+    public boolean check(Reservation reservation, Component sourceComponent) throws RaplaException {
+        Appointment[] appointments = reservation.getAppointments();
+        HashMap<FreetimeCalculator,Appointment> onFreetime = new HashMap<FreetimeCalculator,Appointment>();
+        for(int i=0;i<appointments.length;i++){
+            
+            Appointment appointment = appointments[i];
+            Date start  = appointment.getStart();
+            Collection<AppointmentBlock> blocks = new ArrayList<AppointmentBlock>();
+            appointment.createBlocks(start, DateTools.addDays( start, 366 * 2), blocks);
+            for ( AppointmentBlock block: blocks)
+            {
+                Date blockStart = new Date(block.getStart());
+                Date blockEnd = new Date(block.getEnd());
+                FreetimeCalculator fc = new FreetimeCalculator(blockStart,blockEnd,getQuery(), getRaplaLocale());
+                if(fc.isFreetime()){
+                    onFreetime.put( fc,appointments[i]);
+                }
+            }
+        }
+        
+        // HashMap Length > 0 => At least one Appointment overlaps with freetime
+        if(!onFreetime.isEmpty()){
+            // Analog zu Konflikten Dialog aufbauen
+            JComponent infoComponentFreetime = getInfoFactory().createInfoComponent(reservation);
+            JPanel contentFreetime = new JPanel();
+            contentFreetime.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),getString("confirm.dialog.question")));
+            contentFreetime.setLayout(new TableLayout(new double[][] {
+                {TableLayout.FILL}
+                ,{TableLayout.PREFERRED,TableLayout.PREFERRED,TableLayout.PREFERRED,2,TableLayout.FILL}
+            }));
+            JLabel warningLabel = new JLabel();
+            warningLabel.setText(getString("infoOverlapHolidays"));
+            //warningLabel.setForeground(java.awt.Color.red);
+            contentFreetime.add(warningLabel,"0,1");
+            
+            ConflictInfoOldUI freetimeConflicts = new ConflictInfoOldUI();
+            FreetimeOverlapTableModel model = new FreetimeOverlapTableModel(getContext(),onFreetime, getI18n());
+            freetimeConflicts.getTable().setModel(model);
+            contentFreetime.add(freetimeConflicts.getComponent(),"0,2");
+            contentFreetime.add(infoComponentFreetime,"0,4");
+            DialogUI dialog = DialogUI.create(
+                    getContext()
+                    ,sourceComponent
+                        ,true
+                        ,contentFreetime
+                        ,new String[] {
+                                getString("save")
+                                ,"Betreffende Termine löschen oder Ausnahme hinzufügen"
+                                ,getString("back")
+                                
+                        }
+            );
+            dialog.setDefault(1);
+            dialog.getButton(0).setIcon(getIcon("icon.save"));
+            dialog.getButton(1).setIcon(getIcon("icon.remove"));
+            dialog.getButton(2).setIcon(getIcon("icon.cancel"));
+            dialog.setTitle(getI18n().format("confirm.dialog.title",getName(reservation)));
+            dialog.start();
+            if (dialog.getSelectedIndex()  == 2) {
+                return false;
+            }else if(dialog.getSelectedIndex()  == 1){
+                // delete Appointments
+                Set<FreetimeCalculator> fcSet = onFreetime.keySet();
+                Iterator<FreetimeCalculator> it = fcSet.iterator();
+                while(it.hasNext()){
+                    FreetimeCalculator tempCalc = it.next();
+                    Appointment temp = onFreetime.get(tempCalc);
+                    if(temp.isRepeatingEnabled()){
+                        // A Holiday has always exactly one Appointment
+                        Date startHoliday = tempCalc.getLastFoundHoliday().getAppointments()[0].getStart();
+                        Calendar calendarExceptionTime = createCalendar();
+                        calendarExceptionTime.setTime(startHoliday);
+                        calendarExceptionTime.set(Calendar.HOUR_OF_DAY,0);
+                        calendarExceptionTime.set(Calendar.MINUTE, 0);
+                        calendarExceptionTime.set(Calendar.SECOND, 0);
+                        Repeating tempRepeat = temp.getRepeating();
+                        tempRepeat.addException(calendarExceptionTime.getTime());
+                    }else{
+                        Reservation tempReservation = temp.getReservation();
+                        tempReservation.removeAppointment(temp);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public Calendar createCalendar() {
+        return getRaplaLocale().createCalendar();
+    }
+}

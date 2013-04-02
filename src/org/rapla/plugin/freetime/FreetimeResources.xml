@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?><!--*- coding: utf-8 -*-->
+<!DOCTYPE resources SYSTEM "../../components/xmlbundle/resources.dtd">
+<resources default="en">
+	<!-- Holiday adding -->
+    <entry key="infoOverlapHolidays">
+    	<text lang="en">At least one of your appointments overlaps with a holiday!</text>
+    	<text lang="de">Mindestens einer Ihrer Termine überschneidet sich mit einem Feiertag!</text>
+    	<text lang="fr">réservation en chevauchement avec temps libre!</text>
+    	<text lang="nl">Afspraak overlapt met vrije tijd!</text>
+    </entry>
+    <entry key="holidays">
+    	<text lang="en">holiday</text>
+    	<text lang="de">Feiertag</text>
+        <text lang="fr">jour férié</text>
+    	<text lang="nl">verlofdag</text>
+    </entry>
+    <entry key="colorBlue">
+    	<text lang="en">blue</text>
+    	<text lang="de">blau</text>
+        <text lang="fr">bleu</text>
+    	<text lang="nl">blauw</text>
+    </entry>  
+    <entry key="colorRed">
+    	<text lang="en">red</text>
+    	<text lang="de">rot</text>
+        <text lang="fr">rouge</text>
+    	<text lang="nl">rood</text>
+    </entry>
+    <entry key="colorGreen">
+    	<text lang="en">green</text>
+    	<text lang="de">grün</text>
+        <text lang="fr">vert</text>
+    	<text lang="nl">groen</text>
+    </entry>   
+    <entry key="colorYellow">
+    	<text lang="en">yellow</text>
+    	<text lang="de">gelb</text>
+        <text lang="fr">jaune</text>
+    	<text lang="en">yellow</text>
+    	<text lang="en">yellow</text>
+    	<text lang="en">yellow</text>
+    </entry>
+    <entry key="colorPurple">
+    	<text lang="en">purple</text>
+    	<text lang="de">lila</text>
+        <text lang="fr">violet</text>
+    	<text lang="nl">purper</text>
+    </entry>  
+    <entry key="colorGrey">
+    	<text lang="en">grey</text>
+    	<text lang="de">grau</text>
+        <text lang="fr">gris</text>
+    	<text lang="en">grijs</text>
+    </entry>  
+    <entry key="colorOrange">
+    	<text lang="en">orange</text>
+    	<text lang="de">orange</text>
+        <text lang="fr">orange</text>
+    	<text lang="nl">oranje</text>
+    </entry>
+    <entry key="colorBrown">
+    	<text lang="en">brown</text>
+    	<text lang="de">braun</text>
+        <text lang="fr">brun</text>
+    	<text lang="nl">bruin</text>
+    </entry>  
+    <entry key="colorPink">
+    	<text lang="en">pink</text>
+    	<text lang="de">rosa</text>
+        <text lang="fr">rose</text>
+    	<text lang="nl">roze</text>
+    </entry> 
+    <entry key="colorBeige">
+    	<text lang="en">beige</text>
+    	<text lang="de">beige</text>
+        <text lang="fr">beige</text>
+    	<text lang="nl">beige</text>
+    </entry>       
+    <entry key="freetimeColorChoose">
+    	<text lang="en">freetime color</text>
+    	<text lang="de">Freizeit-Farbe</text>
+    	<text lang="fr">Couleur temps libre</text>
+    	<text lang="nl">Kleur vrije tijd</text>
+    </entry>
+</resources>
