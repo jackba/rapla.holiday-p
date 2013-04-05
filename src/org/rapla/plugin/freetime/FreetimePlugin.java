@@ -21,10 +21,10 @@ public class FreetimePlugin implements PluginDescriptor
         if (!config.getAttributeAsBoolean("enabled", ENABLE_BY_DEFAULT))
             return;
 
-        container.addContainerProvidedComponent(I18nBundle.ROLE, I18nBundleImpl.class.getName(), RESOURCE_FILE, I18nBundleImpl.createConfig(RESOURCE_FILE));
-        if ( container.getContext().has( ClientService.class.getName()) ){
-            container.addContainerProvidedComponent(RaplaExtensionPoints.RESERVATION_SAVE_CHECK, FreetimeReservationSaveCheck.class.getName());
-            container.addContainerProvidedComponent( DateRenderer.class.getName(), FreetimeHighlightRenderer.class.getName() );
+        container.addContainerProvidedComponent(I18nBundle.class, I18nBundleImpl.class, RESOURCE_FILE, I18nBundleImpl.createConfig(RESOURCE_FILE));
+        if ( container.getContext().has( ClientService.class) ){
+            container.addContainerProvidedComponent(RaplaExtensionPoints.RESERVATION_SAVE_CHECK, FreetimeReservationSaveCheck.class);
+            container.addContainerProvidedComponent( DateRenderer.class, FreetimeHighlightRenderer.class );
         }
     }
         

@@ -28,12 +28,12 @@ public class FreetimeOverlapTableModel extends AbstractTableModel
     RaplaLocale loc;
     /**
      * 
-     * @param serviceManager
+     * @param context
      * @param onFreetime
      * @param i18nBundle 
      * @throws RaplaException
      */
-    public FreetimeOverlapTableModel(RaplaContext serviceManager,HashMap<FreetimeCalculator,Appointment> onFreetime, I18nBundle i18n) throws RaplaException
+    public FreetimeOverlapTableModel(RaplaContext context,HashMap<FreetimeCalculator,Appointment> onFreetime, I18nBundle i18n) throws RaplaException
     {
         Set<FreetimeCalculator> fcSet = onFreetime.keySet();
         this.freetimeCalculators = new FreetimeCalculator[fcSet.size()];
@@ -53,8 +53,8 @@ public class FreetimeOverlapTableModel extends AbstractTableModel
         }
 
         this.i18n = i18n;
-        appointmentFormater = (AppointmentFormater) serviceManager.lookup(AppointmentFormater.ROLE);
-        loc = (RaplaLocale) serviceManager.lookup(RaplaLocale.ROLE);
+        appointmentFormater = context.lookup(AppointmentFormater.class);
+        loc = context.lookup(RaplaLocale.class);
         
         columnNames = new String[]
             {

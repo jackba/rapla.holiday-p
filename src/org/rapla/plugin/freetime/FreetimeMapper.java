@@ -33,7 +33,7 @@ public class FreetimeMapper {
 	}
 	
 	/**
-	 * Gibt den String für die Ausgabe in der CalenderOptionsAnsicht aus
+	 * Gibt den String fuer die Ausgabe in der CalenderOptionsAnsicht aus
 	 * @param configValue
 	 * @return
 	 */
@@ -41,13 +41,13 @@ public class FreetimeMapper {
 		return colorNames[configValue];
 	}
 	/**
-	 * Gibt die Namen für die Farben zurück
-	 * @param sm
+	 * Gibt die Namen fuer die Farben zurueck
+	 * @param contest
 	 * @return
 	 * @throws RaplaContextException
 	 */
-	public String[] getColorNames(RaplaContext sm) throws RaplaContextException{
-		I18nBundle i18n = (I18nBundle) sm.lookup(I18nBundle.ROLE + "/org.rapla.RaplaResources");
+	public String[] getColorNames(RaplaContext contest) throws RaplaContextException{
+		I18nBundle i18n =  contest.lookup(I18nBundle.class, "org.rapla.RaplaResources");
 		String[] temp = new String[colorNames.length];
 		for(int i=0;i<temp.length;i++){
 			temp[i] = i18n.getString(colorNames[i]);
