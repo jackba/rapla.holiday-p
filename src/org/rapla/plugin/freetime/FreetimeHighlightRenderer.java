@@ -67,7 +67,7 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer {
 //          CalendarOptions calenderOptions = this.getCalendarOptions();
             return new RenderingInfo(backgroundColor, foregroundColor, tooltipText);
 		}
-		// Falls kein Feiertag auf Wochenende prüfen
+		// Falls kein Feiertag auf Wochenende prÃ¼fen
 		return super.getRenderingInfo(dayOfWeek, day, month, year);
 	}
 	

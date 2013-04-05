@@ -33,7 +33,7 @@ public class FreetimeMapper {
 	}
 	
 	/**
-	 * Gibt den String für die Ausgabe in der CalenderOptionsAnsicht aus
+	 * Gibt den String fÃ¼r die Ausgabe in der CalenderOptionsAnsicht aus
 	 * @param configValue
 	 * @return
 	 */
@@ -41,7 +41,7 @@ public class FreetimeMapper {
 		return colorNames[configValue];
 	}
 	/**
-	 * Gibt die Namen für die Farben zurück
+	 * Gibt die Namen fÃ¼r die Farben zurÃ¼ck
 	 * @param sm
 	 * @return
 	 * @throws RaplaContextException

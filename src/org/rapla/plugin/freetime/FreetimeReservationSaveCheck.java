@@ -75,6 +75,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
             freetimeConflicts.getTable().setModel(model);
             contentFreetime.add(freetimeConflicts.getComponent(),"0,2");
             contentFreetime.add(infoComponentFreetime,"0,4");
+            //todo: i18n
             DialogUI dialog = DialogUI.create(
                     getContext()
                     ,sourceComponent
@@ -82,7 +83,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                         ,contentFreetime
                         ,new String[] {
                                 getString("save")
-                                ,"Betreffende Termine löschen oder Ausnahme hinzufügen"
+                                ,"Betreffende Termine lÃ¶schen oder Ausnahme hinzufÃ¼gen"
                                 ,getString("back")
                                 
                         }

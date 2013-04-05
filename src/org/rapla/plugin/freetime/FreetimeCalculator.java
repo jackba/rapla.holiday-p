@@ -68,10 +68,13 @@ public class FreetimeCalculator{
 		this.called = true;
 		try {
 			//this.Query
+            //todo: very inefficient
 			Allocatable[] list = this.qm.getAllocatables();
 			Allocatable freetime = null;
 			for(int i =0;i<list.length;i++){
-				if(list[i].getName(null).equals("freetime")){
+                //todo: adapt to be configurable
+
+				if(list[i].getName(Locale.getDefault()).equalsIgnoreCase("freetime")){
 					freetime = list[i];
 				}
 			}
@@ -98,6 +101,8 @@ public class FreetimeCalculator{
 		        this.from = calendar.getTime();
 		        this.till = calendar2.getTime();
 			}
+            //todo: very inefficient ... implement a server function isHoliday() which caches requests ...
+            //todo:  observes freetime resource to adapt changes to holiday
 			Reservation[] foundHolidays = qm.getReservations(filter,this.from, this.till);
 			if(foundHolidays.length == 0){
 				this.lastfound = null;
