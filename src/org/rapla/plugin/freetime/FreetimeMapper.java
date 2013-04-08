@@ -3,6 +3,7 @@ package org.rapla.plugin.freetime;
 import java.awt.Color;
 
 import org.rapla.components.xmlbundle.I18nBundle;
+import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 
@@ -47,7 +48,7 @@ public class FreetimeMapper {
 	 * @throws RaplaContextException
 	 */
 	public String[] getColorNames(RaplaContext contest) throws RaplaContextException{
-		I18nBundle i18n =  contest.lookup(I18nBundle.class, "org.rapla.RaplaResources");
+		I18nBundle i18n =  contest.lookup(RaplaComponent.RAPLA_RESOURCES);
 		String[] temp = new String[colorNames.length];
 		for(int i=0;i<temp.length;i++){
 			temp[i] = i18n.getString(colorNames[i]);

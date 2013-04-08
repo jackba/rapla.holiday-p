@@ -30,7 +30,7 @@ import org.rapla.gui.toolkit.DialogUI;
 
 public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {
 
-    public FreetimeReservationSaveCheck(RaplaContext context) throws RaplaException {
+    public FreetimeReservationSaveCheck(RaplaContext context) {
         super(context);
         setChildBundleName(FreetimePlugin.RESOURCE_FILE);
     }
