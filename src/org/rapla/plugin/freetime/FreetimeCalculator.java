@@ -1,11 +1,11 @@
 package org.rapla.plugin.freetime;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.dynamictype.ClassificationFilter;
+import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.facade.QueryModule;
 import org.rapla.framework.RaplaException;
 import org.rapla.framework.RaplaLocale;
@@ -35,7 +35,7 @@ public class FreetimeCalculator{
 	 * @param month
 	 * @param year
 	 * @param qm
-	 * @param raplaLocale2 
+	 * @param raplaLocale
 	 */
 	public FreetimeCalculator(int day, int month, int year,QueryModule qm, RaplaLocale raplaLocale){
 		this.day = day;
@@ -60,8 +60,6 @@ public class FreetimeCalculator{
 	}
 	/**
 	 * Checks for holiday time for the give Date or period in constructor
-	 * @param timeZone
-	 * @param locale
 	 * @return
 	 */
 	public boolean isFreetime(){
@@ -69,11 +67,18 @@ public class FreetimeCalculator{
 		try {
 			//this.Query
             //todo: very inefficient
-			Allocatable[] list = this.qm.getAllocatables();
+            //todo: make configurable
+            DynamicType freetimeType = this.qm.getDynamicType("freetimeType");
+            if (freetimeType == null) {
+                this.lastfound = null;
+                return false;
+            }
+            List<ClassificationFilter> filters = new ArrayList<ClassificationFilter>();
+            filters.add(freetimeType.newClassificationFilter());
+            Allocatable[] list = qm.getAllocatables(filters.toArray(ClassificationFilter.CLASSIFICATIONFILTER_ARRAY));
 			Allocatable freetime = null;
 			for(int i =0;i<list.length;i++){
                 //todo: adapt to be configurable
-
 				if(list[i].getName(Locale.getDefault()).equalsIgnoreCase("freetime")){
 					freetime = list[i];
 				}
@@ -119,8 +124,6 @@ public class FreetimeCalculator{
 	}
 	/**
 	 * Returns the name of the holiday, if there was a holiday found in the period or on date
-	 * @param timeZone
-	 * @param locale
 	 * @return
 	 */
 	public String getFreetimeName(){

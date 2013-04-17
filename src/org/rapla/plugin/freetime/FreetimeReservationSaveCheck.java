@@ -43,6 +43,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
             Appointment appointment = appointments[i];
             Date start  = appointment.getStart();
             Collection<AppointmentBlock> blocks = new ArrayList<AppointmentBlock>();
+            //todo: why two years?
             appointment.createBlocks(start, DateTools.addDays( start, 366 * 2), blocks);
             for ( AppointmentBlock block: blocks)
             {
@@ -54,7 +55,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                 }
             }
         }
-        
+        boolean result = false;
         // HashMap Length > 0 => At least one Appointment overlaps with freetime
         if(!onFreetime.isEmpty()){
             // Analog zu Konflikten Dialog aufbauen
@@ -83,20 +84,20 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                         ,contentFreetime
                         ,new String[] {
                                 getString("save")
-                                ,"Betreffende Termine löschen oder Ausnahme hinzufügen"
+                            //    ,"Ausnahmen in Serien hinzufügen / Einzeltermine löschen?"
                                 ,getString("back")
                                 
                         }
             );
             dialog.setDefault(1);
             dialog.getButton(0).setIcon(getIcon("icon.save"));
-            dialog.getButton(1).setIcon(getIcon("icon.remove"));
-            dialog.getButton(2).setIcon(getIcon("icon.cancel"));
+           // dialog.getButton(1).setIcon(getIcon("icon.remove"));
+            dialog.getButton(1).setIcon(getIcon("icon.cancel"));
+            //dialog.getButton(2).setIcon(getIcon("icon.cancel"));
             dialog.setTitle(getI18n().format("confirm.dialog.title",getName(reservation)));
             dialog.start();
-            if (dialog.getSelectedIndex()  == 2) {
-                return false;
-            }else if(dialog.getSelectedIndex()  == 1){
+            result = dialog.getSelectedIndex() == 0;
+           /* if(dialog.getSelectedIndex()  == 1){
                 // delete Appointments
                 Set<FreetimeCalculator> fcSet = onFreetime.keySet();
                 Iterator<FreetimeCalculator> it = fcSet.iterator();
@@ -105,6 +106,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                     Appointment temp = onFreetime.get(tempCalc);
                     if(temp.isRepeatingEnabled()){
                         // A Holiday has always exactly one Appointment
+                        //todo: is this correct???
                         Date startHoliday = tempCalc.getLastFoundHoliday().getAppointments()[0].getStart();
                         Calendar calendarExceptionTime = createCalendar();
                         calendarExceptionTime.setTime(startHoliday);
@@ -115,12 +117,16 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                         tempRepeat.addException(calendarExceptionTime.getTime());
                     }else{
                         Reservation tempReservation = temp.getReservation();
-                        tempReservation.removeAppointment(temp);
+                        //todo: what happens if there is only one appointment --> bug
+                        //how to handle if reservation is not yet added
+                        //modify mutable reservation instead and go back to ui
+                        reservation.removeAppointment(temp);
+                        //tempReservation.removeAppointment(temp);
                     }
                 }
-            }
+            }     */
         }
-        return true;
+        return result;
     }
 
     public Calendar createCalendar() {
