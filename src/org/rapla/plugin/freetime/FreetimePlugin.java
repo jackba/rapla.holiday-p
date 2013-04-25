@@ -2,6 +2,7 @@ package org.rapla.plugin.freetime;
 
 import org.rapla.client.ClientService;
 import org.rapla.client.ClientServiceContainer;
+import org.rapla.client.RaplaClientExtensionPoints;
 import org.rapla.components.calendar.DateRenderer;
 import org.rapla.components.xmlbundle.I18nBundle;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
@@ -9,7 +10,6 @@ import org.rapla.framework.Configuration;
 import org.rapla.framework.Container;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.TypedComponentRole;
-import org.rapla.plugin.RaplaClientExtensionPoints;
 
 
 public class FreetimePlugin implements PluginDescriptor<ClientServiceContainer>
