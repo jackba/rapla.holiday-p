@@ -6,11 +6,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -18,7 +14,6 @@ import org.rapla.components.layout.TableLayout;
 import org.rapla.components.util.DateTools;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
-import org.rapla.entities.domain.Repeating;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -58,9 +53,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
         // HashMap Length > 0 => At least one Appointment overlaps with freetime
         if(!onFreetime.isEmpty()){
             // Analog zu Konflikten Dialog aufbauen
-            JComponent infoComponentFreetime = getInfoFactory().createInfoComponent(reservation);
             JPanel contentFreetime = new JPanel();
-            contentFreetime.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),getString("confirm.dialog.question")));
             contentFreetime.setLayout(new TableLayout(new double[][] {
                 {TableLayout.FILL}
                 ,{TableLayout.PREFERRED,TableLayout.PREFERRED,TableLayout.PREFERRED,2,TableLayout.FILL}
@@ -74,7 +67,6 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
             FreetimeOverlapTableModel model = new FreetimeOverlapTableModel(getContext(),onFreetime, getI18n());
             freetimeConflicts.getTable().setModel(model);
             contentFreetime.add(freetimeConflicts.getComponent(),"0,2");
-            contentFreetime.add(infoComponentFreetime,"0,4");
             //todo: i18n
             DialogUI dialog = DialogUI.create(
                     getContext()
@@ -93,7 +85,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
            // dialog.getButton(1).setIcon(getIcon("icon.remove"));
             dialog.getButton(1).setIcon(getIcon("icon.cancel"));
             //dialog.getButton(2).setIcon(getIcon("icon.cancel"));
-            dialog.setTitle(getI18n().format("confirm.dialog.title",getName(reservation)));
+            dialog.setTitle(getString("warning"));
             dialog.start();
             result = dialog.getSelectedIndex() == 0;
            /* if(dialog.getSelectedIndex()  == 1){
