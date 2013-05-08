@@ -24,7 +24,6 @@ import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationCheck;
-import org.rapla.gui.internal.view.ConflictInfoOldUI;
 import org.rapla.gui.toolkit.DialogUI;
 
 
