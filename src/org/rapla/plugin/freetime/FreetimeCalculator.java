@@ -77,12 +77,15 @@ public class FreetimeCalculator{
             filters.add(freetimeType.newClassificationFilter());
             Allocatable[] list = qm.getAllocatables(filters.toArray(ClassificationFilter.CLASSIFICATIONFILTER_ARRAY));
 			Allocatable freetime = null;
-			for(int i =0;i<list.length;i++){
+            for (Allocatable aList : list) {
                 //todo: adapt to be configurable
-				if(list[i].getName(Locale.getDefault()).equalsIgnoreCase("freetime")){
-					freetime = list[i];
-				}
-			}
+                if (aList.getName(Locale.getDefault()).equalsIgnoreCase("freetime")) {
+                    freetime = aList;
+                    break;
+                }
+            }
+            if (freetime == null)
+                return false;
 			Allocatable[] filter = {freetime};
 			if(this.mode.equals(FreetimeCalculator.DATE_MODE)){
 				Calendar calendar = raplaLocale.createCalendar();
@@ -95,12 +98,12 @@ public class FreetimeCalculator{
 		        calendar.set(Calendar.MILLISECOND,0);
 		        
 		        Calendar calendar2 = raplaLocale.createCalendar();
-				calendar2.set(Calendar.DATE,this.day);
+				calendar2.set(Calendar.DATE,this.day+1);
 		        calendar2.set(Calendar.MONTH,this.month);
 		        calendar2.set(Calendar.YEAR,this.year);
-		        calendar2.set(Calendar.HOUR_OF_DAY,23);
-		        calendar2.set(Calendar.MINUTE,58);
-		        calendar2.set(Calendar.SECOND,58);
+		        calendar2.set(Calendar.HOUR_OF_DAY,0);
+		        calendar2.set(Calendar.MINUTE,0);
+		        calendar2.set(Calendar.SECOND,0);
 		        calendar2.set(Calendar.MILLISECOND,0);
 		        
 		        this.from = calendar.getTime();
