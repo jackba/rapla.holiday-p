@@ -1,5 +1,5 @@
 
-package org.rapla.plugin.freetime;
+package org.rapla.plugin.freetime.client;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +15,7 @@ import org.rapla.entities.domain.AppointmentFormater;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.framework.RaplaLocale;
+import org.rapla.plugin.freetime.FreetimeCalculator;
 
 public class FreetimeOverlapTableModel extends AbstractTableModel
 {

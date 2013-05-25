@@ -11,13 +11,15 @@
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
 
-package org.rapla.plugin.freetime;
+package org.rapla.plugin.freetime.client;
 
 import java.awt.Color;
 
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.internal.RaplaDateRenderer;
+import org.rapla.plugin.freetime.FreetimePlugin;
+import org.rapla.plugin.freetime.server.FreetimeServiceRemote;
 
 /** Renders holidays in a special color. */
 public class FreetimeHighlightRenderer extends RaplaDateRenderer {
@@ -43,7 +45,7 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer {
 	 * returns the color if day is set for highlight and null if not.
 	 */
 	public RenderingInfo getRenderingInfo(int dayOfWeek, int day, int month, int year) {
-	    FreetimeCalculator fc = new FreetimeCalculator(day, month, year, this.getQuery(), getRaplaLocale());
+	    /*FreetimeCalculator fc = new FreetimeCalculator(day, month, year, this.getQuery(), getRaplaLocale());
 		boolean compare;
 		if(this.isOldResult(day, month, year)){
 			compare = this.lastResult;
@@ -54,21 +56,29 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer {
 			this.lastYear = year;
 			this.lastSet = true;
 			this.lastResult = compare;
-		}
-		
-		
-		if (compare){
-		    FreetimeMapper fm = new FreetimeMapper();
-		    //CalendarOptions calenderOptions = this.getCalendarOptions();
-			int configValue = 0;
-            Color backgroundColor = fm.getFreetimeColorBackground(configValue);
-            Color foregroundColor = fm.getForegroundColor(configValue);
-            String tooltipText = fc.getFreetimeName();
+		}*/
+
+        RenderingInfo renderingInfo = super.getRenderingInfo(dayOfWeek, day, month, year);
+        final String holidayNames;
+        try {
+            holidayNames = getWebservice(FreetimeServiceRemote.class).getHoliday(
+                    getRaplaLocale().toDate(year, month, day)
+            );
+            if (holidayNames != null){
+                //FreetimeMapper fm = new FreetimeMapper();
+                //CalendarOptions calenderOptions = this.getCalendarOptions();
+                int configValue = 0;
+                Color backgroundColor = FreetimePlugin.BACKGROUND_COLOR; //fm.getFreetimeColorBackground(configValue);
+                Color foregroundColor = FreetimePlugin.FOREGROUND_COLOR;//fm.getForegroundColor(configValue);
+                String tooltipText = holidayNames;
+                //String tooltipText = fc.getFreetimeName();
 //          CalendarOptions calenderOptions = this.getCalendarOptions();
-            return new RenderingInfo(backgroundColor, foregroundColor, tooltipText);
-		}
-		// Falls kein Feiertag auf Wochenende prüfen
-		return super.getRenderingInfo(dayOfWeek, day, month, year);
+                renderingInfo = new RenderingInfo(backgroundColor, foregroundColor, tooltipText);
+            }
+        } catch (RaplaException e) {
+
+        }
+        return renderingInfo;
 	}
 	
 	// performance boost

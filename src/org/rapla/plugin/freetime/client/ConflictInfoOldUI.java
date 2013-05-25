@@ -10,7 +10,7 @@
  | program with every library, which license fulfills the Open Source       |
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
-package org.rapla.plugin.freetime;
+package org.rapla.plugin.freetime.client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

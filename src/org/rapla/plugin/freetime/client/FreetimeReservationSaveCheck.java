@@ -1,4 +1,4 @@
-package org.rapla.plugin.freetime;
+package org.rapla.plugin.freetime.client;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -20,6 +20,10 @@ import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationCheck;
 import org.rapla.gui.toolkit.DialogUI;
+import org.rapla.plugin.freetime.FreetimeCalculator;
+import org.rapla.plugin.freetime.FreetimePlugin;
+import org.rapla.plugin.freetime.client.ConflictInfoOldUI;
+import org.rapla.plugin.freetime.client.FreetimeOverlapTableModel;
 
 
 public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {
