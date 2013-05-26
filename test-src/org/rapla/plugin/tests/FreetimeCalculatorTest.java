@@ -8,7 +8,6 @@ import org.rapla.entities.domain.Reservation;
 import org.rapla.facade.ClientFacade;
 import org.rapla.facade.QueryModule;
 import org.rapla.framework.RaplaLocale;
-import org.rapla.plugin.freetime.FreetimeCalculator;
 
 public class FreetimeCalculatorTest extends RaplaTestCase {
 
@@ -33,9 +32,7 @@ public class FreetimeCalculatorTest extends RaplaTestCase {
 		orig.addAllocatable(freetime);
 		facade.store(orig);
 
-        FreetimeCalculator ftc = new FreetimeCalculator(1, 12, 2012, tempQuery,raplaLocale);
 
-		assertEquals(true, ftc.isFreetime());
 
 	}
 

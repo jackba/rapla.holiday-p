@@ -1,32 +1,28 @@
 package org.rapla.plugin.freetime.server;
 
+import org.rapla.entities.domain.Appointment;
+import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.domain.internal.ReservationImpl;
+import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
-import org.rapla.server.ServerExtension;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: rku
- * Date: 25.05.13
- * Time: 16:06
- * To change this template use File | Settings | File Templates.
- */
+
 public class FreetimeServiceRemoteObject implements FreetimeServiceRemote, RemoteMethodFactory<FreetimeServiceRemote> {
     @Override
-    public String getHoliday(Date date) {
-        //todo: this has to be very performant
-
-        if (hasHoliday(date, date))
-            return HolidayCache.getInstance().getHolidayNames(date);
-        else
-            return null;
+    public String getFreetimeName(Date date) {
+        return FreetimeCache.getInstance().getFreetimeName(date);
     }
 
     @Override
-    public boolean hasHoliday(Date from, Date till) {
-        return HolidayCache.getInstance().hasHoliday(from, till);
+    public String [] getFreetimeNames(Date from, Date till) {
+        List<String> freetimeNames = FreetimeCache.getInstance().getFreetimeNames(from, till);
+        return freetimeNames.toArray(new String[freetimeNames.size()]);
     }
 
     @Override

@@ -1,11 +1,7 @@
 package org.rapla.plugin.freetime.client;
 
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,10 +16,8 @@ import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationCheck;
 import org.rapla.gui.toolkit.DialogUI;
-import org.rapla.plugin.freetime.FreetimeCalculator;
 import org.rapla.plugin.freetime.FreetimePlugin;
-import org.rapla.plugin.freetime.client.ConflictInfoOldUI;
-import org.rapla.plugin.freetime.client.FreetimeOverlapTableModel;
+import org.rapla.plugin.freetime.server.FreetimeServiceRemote;
 
 
 public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {
@@ -34,8 +28,23 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
     }
 
     public boolean check(Reservation reservation, Component sourceComponent) throws RaplaException {
+
         Appointment[] appointments = reservation.getAppointments();
-        HashMap<FreetimeCalculator,Appointment> onFreetime = new HashMap<FreetimeCalculator,Appointment>();
+
+        //todo: iterate over appointments
+        Date from = getRaplaLocale().createCalendar().getTime();
+        Date till = null;
+        for (Appointment appointment : appointments) {
+            if (appointment.getStart().before(from))
+                from = appointment.getStart();
+            if (till == null || (appointment.getEnd() != null && appointment.getEnd().after(till)))
+                till = appointment.getEnd();
+
+        }
+        final String [] freetimes = getWebservice(FreetimeServiceRemote.class).getFreetimeNames(from, till);
+
+
+        /*HashMap<FreetimeCalculator,Appointment> onFreetime = new HashMap<FreetimeCalculator,Appointment>();
         for(int i=0;i<appointments.length;i++){
             
             Appointment appointment = appointments[i];
@@ -52,10 +61,10 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                     onFreetime.put( fc,appointments[i]);
                 }
             }
-        }
-        boolean result = false;
+        }*/
+        boolean result = freetimes.length == 0;
         // HashMap Length > 0 => At least one Appointment overlaps with freetime
-        if(!onFreetime.isEmpty()){
+        if(freetimes.length>0){
             // Analog zu Konflikten Dialog aufbauen
             JPanel contentFreetime = new JPanel();
             contentFreetime.setLayout(new TableLayout(new double[][] {
@@ -68,7 +77,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
             contentFreetime.add(warningLabel,"0,1");
             
             ConflictInfoOldUI freetimeConflicts = new ConflictInfoOldUI();
-            FreetimeOverlapTableModel model = new FreetimeOverlapTableModel(getContext(),onFreetime, getI18n());
+            FreetimeOverlapTableModel model = new FreetimeOverlapTableModel(getContext(),  freetimes, getI18n());
             freetimeConflicts.getTable().setModel(model);
             contentFreetime.add(freetimeConflicts.getComponent(),"0,2");
             //todo: i18n

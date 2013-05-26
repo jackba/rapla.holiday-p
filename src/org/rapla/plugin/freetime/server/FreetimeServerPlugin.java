@@ -6,17 +6,10 @@ import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.plugin.freetime.FreetimePlugin;
 import org.rapla.server.RaplaServerExtensionPoints;
-import org.rapla.server.ServerExtension;
 import org.rapla.server.ServerServiceContainer;
 
-/**
- * Created with IntelliJ IDEA.
- * User: rku
- * Date: 25.05.13
- * Time: 16:19
- * To change this template use File | Settings | File Templates.
- */
-public class FreetimeServerPlugin  implements PluginDescriptor<ServerServiceContainer>, ServerExtension {
+
+public class FreetimeServerPlugin  implements PluginDescriptor<ServerServiceContainer> {
 
         /* (non-Javadoc)
       * @see org.rapla.framework.PluginDescriptor#provideServices(org.rapla.framework.Container, org.apache.avalon.framework.configuration.Configuration)
@@ -27,11 +20,11 @@ public class FreetimeServerPlugin  implements PluginDescriptor<ServerServiceCont
                 return;
             }
             FreetimeServerPlugin.loadConfigParameters(config);
-            container.addContainerProvidedComponent(RaplaServerExtensionPoints.SERVER_EXTENSION, FreetimeServerPlugin.class);
+            container.addContainerProvidedComponent(RaplaServerExtensionPoints.SERVER_EXTENSION, FreetimeCache.class);
             container.addRemoteMethodFactory(FreetimeServiceRemote.class, FreetimeServiceRemoteObject.class);
         }
 
         private static void loadConfigParameters(Configuration config) {
-            //To change body of created methods use File | Settings | File Templates.
+
         }
 }

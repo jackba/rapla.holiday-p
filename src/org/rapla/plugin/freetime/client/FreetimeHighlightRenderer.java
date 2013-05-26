@@ -13,8 +13,9 @@
 
 package org.rapla.plugin.freetime.client;
 
-import java.awt.Color;
-
+import org.rapla.entities.domain.Appointment;
+import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.internal.RaplaDateRenderer;
@@ -23,15 +24,6 @@ import org.rapla.plugin.freetime.server.FreetimeServiceRemote;
 
 /** Renders holidays in a special color. */
 public class FreetimeHighlightRenderer extends RaplaDateRenderer {
-
-	//Performance boost
-	private boolean lastSet = false;
-	private int lastDay;
-	private int lastMonth;
-	private int lastYear;
-	private boolean lastResult;
-	//Performance boost variables end
-	
 	/**
 	 * 
 	 * @param context
@@ -45,52 +37,22 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer {
 	 * returns the color if day is set for highlight and null if not.
 	 */
 	public RenderingInfo getRenderingInfo(int dayOfWeek, int day, int month, int year) {
-	    /*FreetimeCalculator fc = new FreetimeCalculator(day, month, year, this.getQuery(), getRaplaLocale());
-		boolean compare;
-		if(this.isOldResult(day, month, year)){
-			compare = this.lastResult;
-		}else{
-			compare = fc.isFreetime();
-			this.lastDay = day;
-			this.lastMonth = month;
-			this.lastYear = year;
-			this.lastSet = true;
-			this.lastResult = compare;
-		}*/
-
-        RenderingInfo renderingInfo = super.getRenderingInfo(dayOfWeek, day, month, year);
-        final String holidayNames;
+	    RenderingInfo renderingInfo = super.getRenderingInfo(dayOfWeek, day, month, year);
         try {
-            holidayNames = getWebservice(FreetimeServiceRemote.class).getHoliday(
+            final String freetime = getWebservice(FreetimeServiceRemote.class).getFreetimeName(
                     getRaplaLocale().toDate(year, month, day)
             );
-            if (holidayNames != null){
-                //FreetimeMapper fm = new FreetimeMapper();
-                //CalendarOptions calenderOptions = this.getCalendarOptions();
-                int configValue = 0;
-                Color backgroundColor = FreetimePlugin.BACKGROUND_COLOR; //fm.getFreetimeColorBackground(configValue);
-                Color foregroundColor = FreetimePlugin.FOREGROUND_COLOR;//fm.getForegroundColor(configValue);
-                String tooltipText = holidayNames;
-                //String tooltipText = fc.getFreetimeName();
-//          CalendarOptions calenderOptions = this.getCalendarOptions();
-                renderingInfo = new RenderingInfo(backgroundColor, foregroundColor, tooltipText);
+
+            if (freetime != null && !freetime.isEmpty()){
+                renderingInfo = new RenderingInfo(
+                        FreetimePlugin.BACKGROUND_COLOR,
+                        FreetimePlugin.FOREGROUND_COLOR,
+                        freetime);
             }
         } catch (RaplaException e) {
-
+            getLogger().error(e.getMessage(), e);
         }
         return renderingInfo;
 	}
 	
-	// performance boost
-	private boolean isOldResult(int day,int month, int year){
-		if(!this.lastSet){
-			return false;
-		}else{
-			if(this.lastDay == day && this.lastMonth == month && this.lastYear == year){
-				return true;
-			}else{
-				return false;
-			}
-		}
-	}
 }
