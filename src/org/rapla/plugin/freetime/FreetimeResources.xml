@@ -82,4 +82,14 @@
     	<text lang="fr">Couleur temps libre</text>
     	<text lang="nl">Kleur vrije tijd</text>
     </entry>
+
+    <entry key="foreground">
+        <text lang="en">Foreground Color</text>
+        <text lang="de">Schriftfarbe</text>
+    </entry>
+
+    <entry key="background">
+        <text lang="en">Background Color</text>
+        <text lang="de">Hintergrundfarbe</text>
+    </entry>
 </resources>
