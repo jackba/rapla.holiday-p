@@ -14,47 +14,55 @@ package org.rapla.plugin.freetime.client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.util.Date;
+import java.util.Map;
 
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
+import org.rapla.facade.RaplaComponent;
+import org.rapla.framework.RaplaContext;
 import org.rapla.gui.toolkit.RaplaWidget;
+import org.rapla.plugin.freetime.FreetimePlugin;
 
-public class ConflictInfoOldUI
+public class FreetimeConflictUI extends RaplaComponent
     implements RaplaWidget
 {
     JPanel content = new JPanel();
     JTable jTable1 = new JTable();
-    private Action editAction = null;
 
-    public ConflictInfoOldUI() {
-        content.setLayout(new BorderLayout());
+    public FreetimeConflictUI(RaplaContext context,Map<Date,String> onFreetime) {
+        super(context);
+        setChildBundleName(FreetimePlugin.RESOURCE_FILE);
+    	content.setLayout(new BorderLayout());
         jTable1.setPreferredScrollableViewportSize(new Dimension(400, 70));
         JScrollPane scrollPane = new JScrollPane(jTable1);
         content.add(scrollPane,BorderLayout.CENTER);
-
-        jTable1.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent event) {
-                    if(event.getClickCount() == 2 && editAction!=null) {
-                        editAction.actionPerformed(new ActionEvent(ConflictInfoOldUI.this, ActionEvent.ACTION_PERFORMED, ""));
-                    }
-                }
-            });
+        Object[][] data = new Object[onFreetime.size()][2];
+        int i=0;
+        for ( Date date: onFreetime.keySet())
+        {
+        	String name = onFreetime.get( date);
+        	data[i][0] = getRaplaLocale().formatDate(date);
+        	data[i][1] = name;
+        	i++;
+        }
+        String[] columnNames = new String[]
+                {
+            		getString("date")
+                    , getString("holidays")
+                };
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        jTable1.setModel( model);
     }
 
     public JTable getTable() {
         return jTable1;
     }
 
-    public void setEditAction(Action action) {
-        editAction = action;
-    }
 
     public JComponent getComponent() {
         return content;

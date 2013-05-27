@@ -1,5 +1,7 @@
 package org.rapla.plugin.freetime;
 
+import java.awt.Color;
+
 import org.rapla.client.ClientServiceContainer;
 import org.rapla.client.RaplaClientExtensionPoints;
 import org.rapla.components.calendar.DateRenderer;
@@ -10,8 +12,6 @@ import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.TypedComponentRole;
 import org.rapla.plugin.freetime.client.FreetimeHighlightRenderer;
 import org.rapla.plugin.freetime.client.FreetimeReservationSaveCheck;
-
-import java.awt.*;
 
 
 public class FreetimePlugin implements PluginDescriptor<ClientServiceContainer>
@@ -24,14 +24,7 @@ public class FreetimePlugin implements PluginDescriptor<ClientServiceContainer>
     public static final Color DEFAULT_FOREGROUND_COLOR = Color.black;
     public static Color FOREGROUND_COLOR = DEFAULT_FOREGROUND_COLOR;
 
-    public static final String DEFAULT_FREETIME_RESOURCETYPE = "freetimeType";
-    public static String FREETIME_RESOURCETYPE = DEFAULT_FREETIME_RESOURCETYPE;
-
     public static final String DEFAULT_FREETIME_RESOURCE = "freetime";
-    public static String FREETIME_RESOURCE = DEFAULT_FREETIME_RESOURCE;
-
-
-
 
     public void provideServices(ClientServiceContainer container, Configuration config) 
     {
@@ -41,10 +34,6 @@ public class FreetimePlugin implements PluginDescriptor<ClientServiceContainer>
         container.addContainerProvidedComponent(RESOURCE_FILE, I18nBundleImpl.class, I18nBundleImpl.createConfig(RESOURCE_FILE.getId()));
         container.addContainerProvidedComponent(RaplaClientExtensionPoints.RESERVATION_SAVE_CHECK, FreetimeReservationSaveCheck.class);
         container.addContainerProvidedComponent(DateRenderer.class, FreetimeHighlightRenderer.class );
-    }
-    
-    public String toString() {
-        return "Freetime Service";
     }
 
 }

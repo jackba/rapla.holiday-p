@@ -1,15 +1,18 @@
 package org.rapla.plugin.freetime.client;
 
 import java.awt.Component;
-import java.util.*;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.rapla.components.layout.TableLayout;
-import org.rapla.components.util.DateTools;
+import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.domain.Appointment;
-import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -26,45 +29,31 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
         super(context);
         setChildBundleName(FreetimePlugin.RESOURCE_FILE);
     }
-
+    protected Map<Date, String> toMap(String[][] holidays) {
+		Map<Date,String> map = new TreeMap<Date, String>();
+		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( getRaplaLocale().createCalendar());
+		for (String[] holiday:holidays)
+		{
+			String dateString = holiday[0];
+			try {
+				Date date = dateParser.parseDate(dateString,false);
+				String name = holiday[1];
+				map.put( date, name);
+			} catch (ParseException e) {
+				getLogger().warn("Can't parse date of holiday " + dateString + " Ignoring." );
+			}
+		}
+		return map;
+	}
+    
     public boolean check(Reservation reservation, Component sourceComponent) throws RaplaException {
-
         Appointment[] appointments = reservation.getAppointments();
-
-        //todo: iterate over appointments
-        Date from = getRaplaLocale().createCalendar().getTime();
-        Date till = null;
-        for (Appointment appointment : appointments) {
-            if (appointment.getStart().before(from))
-                from = appointment.getStart();
-            if (till == null || (appointment.getEnd() != null && appointment.getEnd().after(till)))
-                till = appointment.getEnd();
-
-        }
-        final String [] freetimes = getWebservice(FreetimeServiceRemote.class).getFreetimeNames(from, till);
-
-
-        /*HashMap<FreetimeCalculator,Appointment> onFreetime = new HashMap<FreetimeCalculator,Appointment>();
-        for(int i=0;i<appointments.length;i++){
-            
-            Appointment appointment = appointments[i];
-            Date start  = appointment.getStart();
-            Collection<AppointmentBlock> blocks = new ArrayList<AppointmentBlock>();
-            //todo: why two years?
-            appointment.createBlocks(start, DateTools.addDays( start, 366 * 2), blocks);
-            for ( AppointmentBlock block: blocks)
-            {
-                Date blockStart = new Date(block.getStart());
-                Date blockEnd = new Date(block.getEnd());
-                FreetimeCalculator fc = new FreetimeCalculator(blockStart,blockEnd,getQuery(), getRaplaLocale());
-                if(fc.isFreetime()){
-                    onFreetime.put( fc,appointments[i]);
-                }
-            }
-        }*/
-        boolean result = freetimes.length == 0;
+        FreetimeServiceRemote webservice = getWebservice(FreetimeServiceRemote.class);
+        String[][] holidays = webservice.getHolidayConflicts(appointments);
+        Map<Date, String> holidayMap = toMap(holidays);
+        boolean result = true;
         // HashMap Length > 0 => At least one Appointment overlaps with freetime
-        if(freetimes.length>0){
+        if(!holidayMap.isEmpty()){
             // Analog zu Konflikten Dialog aufbauen
             JPanel contentFreetime = new JPanel();
             contentFreetime.setLayout(new TableLayout(new double[][] {
@@ -75,10 +64,8 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
             warningLabel.setText(getString("infoOverlapHolidays"));
             //warningLabel.setForeground(java.awt.Color.red);
             contentFreetime.add(warningLabel,"0,1");
-            
-            ConflictInfoOldUI freetimeConflicts = new ConflictInfoOldUI();
-            FreetimeOverlapTableModel model = new FreetimeOverlapTableModel(getContext(),  freetimes, getI18n());
-            freetimeConflicts.getTable().setModel(model);
+           
+            FreetimeConflictUI freetimeConflicts = new FreetimeConflictUI(getContext(),holidayMap);
             contentFreetime.add(freetimeConflicts.getComponent(),"0,2");
             //todo: i18n
             DialogUI dialog = DialogUI.create(
@@ -88,7 +75,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                         ,contentFreetime
                         ,new String[] {
                                 getString("save")
-                            //    ,"Ausnahmen in Serien hinzufÃ¼gen / Einzeltermine lÃ¶schen?"
+                            //    ,"Ausnahmen in Serien hinzufügen / Einzeltermine löschen?"
                                 ,getString("back")
                                 
                         }
