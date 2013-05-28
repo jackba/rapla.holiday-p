@@ -1,15 +1,5 @@
 package org.rapla.plugin.freetime.client;
 
-import java.awt.Component;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.rapla.components.layout.TableLayout;
 import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.domain.Appointment;
@@ -20,7 +10,15 @@ import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationCheck;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.plugin.freetime.FreetimePlugin;
-import org.rapla.plugin.freetime.server.FreetimeServiceRemote;
+import org.rapla.plugin.freetime.FreetimeServiceRemote;
+
+import javax.swing.*;
+import java.awt.*;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {

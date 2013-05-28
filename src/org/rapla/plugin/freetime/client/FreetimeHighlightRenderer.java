@@ -13,13 +13,6 @@
 
 package org.rapla.plugin.freetime.client;
 
-import java.awt.Color;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.components.util.TimeInterval;
 import org.rapla.facade.ModificationEvent;
@@ -28,7 +21,14 @@ import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.internal.RaplaDateRenderer;
 import org.rapla.plugin.freetime.FreetimePlugin;
-import org.rapla.plugin.freetime.server.FreetimeServiceRemote;
+import org.rapla.plugin.freetime.FreetimeServiceRemote;
+
+import java.awt.*;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /** Renders holidays in a special color. */
 public class FreetimeHighlightRenderer extends RaplaDateRenderer implements ModificationListener  

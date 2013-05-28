@@ -19,6 +19,7 @@ import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.freetime.FreetimePlugin;
+import org.rapla.plugin.freetime.FreetimeServiceRemote;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
 

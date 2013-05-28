@@ -5,6 +5,7 @@ import org.rapla.framework.Configuration;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.plugin.freetime.FreetimePlugin;
+import org.rapla.plugin.freetime.FreetimeServiceRemote;
 import org.rapla.server.ServerServiceContainer;
 
 

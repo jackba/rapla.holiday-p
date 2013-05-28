@@ -1,4 +1,4 @@
-package org.rapla.plugin.freetime.server;
+package org.rapla.plugin.freetime;
 
 import java.util.Date;
 

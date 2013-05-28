@@ -12,21 +12,16 @@
  *--------------------------------------------------------------------------*/
 package org.rapla.plugin.freetime.client;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Date;
-import java.util.Map;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.gui.toolkit.RaplaWidget;
 import org.rapla.plugin.freetime.FreetimePlugin;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.Date;
+import java.util.Map;
 
 public class FreetimeConflictUI extends RaplaComponent
     implements RaplaWidget
