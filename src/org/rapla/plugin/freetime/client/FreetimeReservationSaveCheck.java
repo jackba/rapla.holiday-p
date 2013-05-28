@@ -75,7 +75,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
                         ,contentFreetime
                         ,new String[] {
                                 getString("save")
-                            //    ,"Ausnahmen in Serien hinzufügen / Einzeltermine löschen?"
+                    //todo: ausnahmen einfÃ¼gen
                                 ,getString("back")
                                 
                         }
