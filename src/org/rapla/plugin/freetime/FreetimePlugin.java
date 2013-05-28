@@ -33,11 +33,11 @@ public class FreetimePlugin implements PluginDescriptor<ClientServiceContainer>
     public void provideServices(ClientServiceContainer container, Configuration config) 
     {
         container.addContainerProvidedComponent(RaplaClientExtensionPoints.PLUGIN_OPTION_PANEL_EXTENSION, FreetimeAdminOptions.class);
+        container.addContainerProvidedComponent(RESOURCE_FILE, I18nBundleImpl.class, I18nBundleImpl.createConfig(RESOURCE_FILE.getId()));
 
         if (!config.getAttributeAsBoolean("enabled", ENABLE_BY_DEFAULT))
             return;
 
-        container.addContainerProvidedComponent(RESOURCE_FILE, I18nBundleImpl.class, I18nBundleImpl.createConfig(RESOURCE_FILE.getId()));
         container.addContainerProvidedComponent(RaplaClientExtensionPoints.RESERVATION_SAVE_CHECK, FreetimeReservationSaveCheck.class);
         container.addContainerProvidedComponent(DateRenderer.class, FreetimeHighlightRenderer.class );
     }
