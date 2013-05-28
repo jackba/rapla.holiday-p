@@ -25,7 +25,7 @@ public class FreetimePlugin implements PluginDescriptor<ClientServiceContainer>
 
     public static final Color DEFAULT_BACKGROUND_COLOR = new Color(0x18, 0x74, 0xCD);
     public static Color BACKGROUND_COLOR = DEFAULT_BACKGROUND_COLOR;
-    public static final Color DEFAULT_FOREGROUND_COLOR = Color.black;
+    public static final Color DEFAULT_FOREGROUND_COLOR = Color.white;
     public static Color FOREGROUND_COLOR = DEFAULT_FOREGROUND_COLOR;
 
     public static final String DEFAULT_FREETIME_RESOURCE = "freetime";

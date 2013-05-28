@@ -33,6 +33,8 @@ public class FreetimeAdminOptions extends DefaultPluginOption {
         this.lbBackgroundColor = new JLabel(getString("background"));
         this.ccBackground = new JColorChooser();
 
+        //todo: add customizable resourcetyp and resource
+
     }
 
 
