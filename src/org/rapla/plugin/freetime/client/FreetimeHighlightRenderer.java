@@ -13,22 +13,23 @@
 
 package org.rapla.plugin.freetime.client;
 
-import org.rapla.components.util.SerializableDateTimeFormat;
-import org.rapla.components.util.TimeInterval;
-import org.rapla.facade.ModificationEvent;
-import org.rapla.facade.ModificationListener;
-import org.rapla.framework.RaplaContext;
-import org.rapla.framework.RaplaException;
-import org.rapla.gui.internal.RaplaDateRenderer;
-import org.rapla.plugin.freetime.FreetimePlugin;
-import org.rapla.plugin.freetime.FreetimeServiceRemote;
-
-import java.awt.*;
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.rapla.components.util.SerializableDateTimeFormat;
+import org.rapla.components.util.TimeInterval;
+import org.rapla.facade.ModificationEvent;
+import org.rapla.facade.ModificationListener;
+import org.rapla.framework.Configuration;
+import org.rapla.framework.RaplaContext;
+import org.rapla.framework.RaplaException;
+import org.rapla.gui.internal.RaplaDateRenderer;
+import org.rapla.plugin.freetime.FreetimePlugin;
+import org.rapla.plugin.freetime.FreetimeServiceRemote;
 
 /** Renders holidays in a special color. */
 public class FreetimeHighlightRenderer extends RaplaDateRenderer implements ModificationListener  
@@ -37,16 +38,17 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	TimeInterval invalidateInterval;
 	private SortedMap<Date, String> cache = new TreeMap<Date, String>();
 	private long lastCachedTime;
-	   
+	Configuration config;
 	/**
 	 * 
 	 * @param context
 	 * @throws RaplaException
 	 */
-	public FreetimeHighlightRenderer(RaplaContext context) throws RaplaException {
+	public FreetimeHighlightRenderer(RaplaContext context, Configuration config) throws RaplaException {
 		super(context);
 		getUpdateModule().addModificationListener( this);
 		updateCache();
+		this.config = config;
 	}
 	
 	private void updateCache() throws RaplaException
@@ -102,8 +104,9 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
         	}
         	String holidayNames = cache.get( date);
         	if (holidayNames != null){
-                Color backgroundColor = FreetimePlugin.BACKGROUND_COLOR; 
-                Color foregroundColor = FreetimePlugin.FOREGROUND_COLOR;
+        		
+                Color backgroundColor = FreetimePlugin.DEFAULT_BACKGROUND_COLOR; 
+                Color foregroundColor = FreetimePlugin.DEFAULT_FOREGROUND_COLOR;
                 String tooltipText = holidayNames;
                 renderingInfo = new RenderingInfo(backgroundColor, foregroundColor, tooltipText);
             }
