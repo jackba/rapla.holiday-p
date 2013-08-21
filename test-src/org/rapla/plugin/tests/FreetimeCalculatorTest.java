@@ -25,7 +25,7 @@ public class FreetimeCalculatorTest extends RaplaTestCase {
 		Reservation orig = (Reservation) facade.newReservation();
 		orig.getClassification().setValue("name", "freetime");
 		RaplaLocale raplaLocale = getRaplaLocale();
-		Date start = raplaLocale.toDate(2012, 12, 1);
+		Date start = raplaLocale.toRaplaDate(2012, 12, 1);
 		Date end = raplaLocale.toDate(start, raplaLocale.toTime(12, 0, 0));
 		orig.addAppointment(facade.newAppointment(start, end));
 

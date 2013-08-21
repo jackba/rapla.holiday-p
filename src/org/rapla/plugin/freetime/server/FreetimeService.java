@@ -92,7 +92,7 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
     }
 
 	protected String[][] serialize(SortedMap<Date, String> map) {
-		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( getRaplaLocale().createCalendar());
+		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( );
 		Set<Date> keySet = map.keySet();
 		String[][] result = new String[keySet.size()][2]; 
 		int i=0;

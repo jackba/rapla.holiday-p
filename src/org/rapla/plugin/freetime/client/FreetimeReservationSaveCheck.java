@@ -1,5 +1,14 @@
 package org.rapla.plugin.freetime.client;
 
+import java.awt.Component;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.rapla.components.layout.TableLayout;
 import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.domain.Appointment;
@@ -12,14 +21,6 @@ import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.plugin.freetime.FreetimePlugin;
 import org.rapla.plugin.freetime.FreetimeServiceRemote;
 
-import javax.swing.*;
-import java.awt.*;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
-
 
 public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {
 
@@ -29,7 +30,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
     }
     protected Map<Date, String> toMap(String[][] holidays) {
 		Map<Date,String> map = new TreeMap<Date, String>();
-		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( getRaplaLocale().createCalendar());
+		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( );
 		for (String[] holiday:holidays)
 		{
 			String dateString = holiday[0];
@@ -37,7 +38,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
 				Date date = dateParser.parseDate(dateString,false);
 				String name = holiday[1];
 				map.put( date, name);
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				getLogger().warn("Can't parse date of holiday " + dateString + " Ignoring." );
 			}
 		}

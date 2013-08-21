@@ -14,12 +14,12 @@
 package org.rapla.plugin.freetime.client;
 
 import java.awt.Color;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.rapla.components.calendar.DateRendererAdapter;
 import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.components.util.TimeInterval;
 import org.rapla.facade.ModificationEvent;
@@ -27,6 +27,7 @@ import org.rapla.facade.ModificationListener;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
+import org.rapla.framework.RaplaLocale;
 import org.rapla.gui.internal.RaplaDateRenderer;
 import org.rapla.plugin.freetime.FreetimePlugin;
 import org.rapla.plugin.freetime.FreetimeServiceRemote;
@@ -75,7 +76,7 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 
 	protected Map<Date, String> toMap(String[][] holidays) {
 		Map<Date,String> map = new TreeMap<Date, String>();
-		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( getRaplaLocale().createCalendar());
+		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat();
 		for (String[] holiday:holidays)
 		{
 			String dateString = holiday[0];
@@ -83,7 +84,7 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 				Date date = dateParser.parseDate(dateString,false);
 				String name = holiday[1];
 				map.put( date, name);
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				getLogger().warn("Can't parse date of holiday " + dateString + " Ignoring." );
 			}
 		}
@@ -96,20 +97,33 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	public RenderingInfo getRenderingInfo(int dayOfWeek, int day, int month, int year) {
         RenderingInfo renderingInfo = super.getRenderingInfo(dayOfWeek, day, month, year);
         try {
-        	Date date = getRaplaLocale().toDate(year, month, day);
+        	RaplaLocale raplaLocale = getRaplaLocale();
         	// if five seconds passed since last check, check again
         	if (System.currentTimeMillis() - lastCachedTime > 5000 || invalidateInterval != null )
         	{
         		updateCache();
         	}
-        	String holidayNames = cache.get( date);
-        	if (holidayNames != null){
-        		
-                Color backgroundColor = FreetimePlugin.DEFAULT_BACKGROUND_COLOR; 
-                Color foregroundColor = FreetimePlugin.DEFAULT_FOREGROUND_COLOR;
-                String tooltipText = holidayNames;
-                renderingInfo = new RenderingInfo(backgroundColor, foregroundColor, tooltipText);
-            }
+        	// We need to add a DateRendererAdapter hack to make the semantic change in RenderingInfo in 1.8 work for 1.7 as well 
+			DateRendererAdapter dateRendererAdapter = new DateRendererAdapter( this, raplaLocale.getTimeZone(), raplaLocale.getLocale())
+			{
+				public RenderingInfo getRenderingInfo(Date date) {
+		        	String holidayNames = cache.get( date);
+		        	if (holidayNames != null){
+		        		
+		                Color backgroundColor = FreetimePlugin.DEFAULT_BACKGROUND_COLOR; 
+		                Color foregroundColor = FreetimePlugin.DEFAULT_FOREGROUND_COLOR;
+		                String tooltipText = holidayNames;
+		                RenderingInfo renderingInfo = new RenderingInfo(backgroundColor, foregroundColor, tooltipText);
+		                return renderingInfo;
+		            }
+		        	return null;
+				}
+			};
+			RenderingInfo newInfo = dateRendererAdapter.getRenderingInfo(dayOfWeek, day, month, year);
+			if ( newInfo != null)
+			{
+				renderingInfo = newInfo;
+			}
         } catch (RaplaException e) {
 
         }
@@ -132,7 +146,6 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 		}
 	}
 
-	@Override
 	public boolean isInvokedOnAWTEventQueue() {
 		return true;
 	}
