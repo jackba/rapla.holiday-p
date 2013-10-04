@@ -35,6 +35,7 @@ import org.rapla.plugin.freetime.FreetimeServiceRemote;
 /** Renders holidays in a special color. */
 public class FreetimeHighlightRenderer extends RaplaDateRenderer implements ModificationListener  
 {
+	private static final int INVALIDATE_IN_MILLIS = 10000;
 	long holidayRepositoryVersion = 0;
 	TimeInterval invalidateInterval;
 	private SortedMap<Date, String> cache = new TreeMap<Date, String>();
@@ -67,7 +68,7 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	        holidayRepositoryVersion = version;
 	        invalidateInterval = null;
         }
-        if ( System.currentTimeMillis() - lastCachedTime > 5000)
+        if ( System.currentTimeMillis() - INVALIDATE_IN_MILLIS > 5000)
         {
             invalidateInterval = null;
         }
@@ -94,12 +95,12 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	/**
 	 * returns the color if day is set for highlight and null if not.
 	 */
-	public RenderingInfo getRenderingInfo(int dayOfWeek, int day, int month, int year) {
+	synchronized public RenderingInfo getRenderingInfo(int dayOfWeek, int day, int month, int year) {
         RenderingInfo renderingInfo = super.getRenderingInfo(dayOfWeek, day, month, year);
         try {
         	RaplaLocale raplaLocale = getRaplaLocale();
         	// if five seconds passed since last check, check again
-        	if (System.currentTimeMillis() - lastCachedTime > 5000 || invalidateInterval != null )
+        	if (System.currentTimeMillis() - lastCachedTime > INVALIDATE_IN_MILLIS || invalidateInterval != null )
         	{
         		updateCache();
         	}
