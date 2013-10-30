@@ -145,12 +145,6 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 				invalidateInterval = interval;
 			}
 		}
-	}
-
-	public boolean isInvokedOnAWTEventQueue() {
-		return true;
-	}
-
-	
+	}	
 	
 }
