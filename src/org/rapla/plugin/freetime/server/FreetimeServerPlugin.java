@@ -18,6 +18,7 @@ public class FreetimeServerPlugin  implements PluginDescriptor<ServerServiceCont
                 return;
             }
             container.addRemoteMethodFactory(FreetimeServiceRemote.class, FreetimeService.class, config);
+            container.addContainerProvidedComponent(FreetimeService.class, FreetimeService.class,config);
         }
 
 }
