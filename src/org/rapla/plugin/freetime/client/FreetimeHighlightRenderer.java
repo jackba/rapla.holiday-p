@@ -20,7 +20,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.rapla.components.calendar.DateRendererAdapter;
-import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.components.util.TimeInterval;
 import org.rapla.facade.ModificationEvent;
 import org.rapla.facade.ModificationListener;
@@ -46,8 +45,10 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	 * @param context
 	 * @throws RaplaException
 	 */
-	public FreetimeHighlightRenderer(RaplaContext context, Configuration config) throws RaplaException {
+	FreetimeServiceRemote webservice;
+	public FreetimeHighlightRenderer(RaplaContext context, Configuration config,FreetimeServiceRemote webservice) throws RaplaException {
 		super(context);
+		this.webservice = webservice;
 		getUpdateModule().addModificationListener( this);
 		updateCache();
 		this.config = config;
@@ -55,15 +56,13 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	
 	private void updateCache() throws RaplaException
 	{
-        FreetimeServiceRemote webservice = getWebservice(FreetimeServiceRemote.class);
         long version = webservice.getHolidayRepositoryVersion();
         if ( version > holidayRepositoryVersion)
         {
 	        Date start = null;
 			Date end = null;
 			cache.clear();
-	        String[][] holidays = webservice.getHolidays(start, end);	
-	        Map<Date, String> map = toMap(holidays);
+	        Map<Date, String> map = webservice.getHolidays(start, end).get();
 	        cache.putAll( map);
 	        holidayRepositoryVersion = version;
 	        invalidateInterval = null;
@@ -74,23 +73,6 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
         }
         lastCachedTime = System.currentTimeMillis();
    }
-
-	protected Map<Date, String> toMap(String[][] holidays) {
-		Map<Date,String> map = new TreeMap<Date, String>();
-		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat();
-		for (String[] holiday:holidays)
-		{
-			String dateString = holiday[0];
-			try {
-				Date date = dateParser.parseDate(dateString,false);
-				String name = holiday[1];
-				map.put( date, name);
-			} catch (Exception e) {
-				getLogger().warn("Can't parse date of holiday " + dateString + " Ignoring." );
-			}
-		}
-		return map;
-	}
 
 	/**
 	 * returns the color if day is set for highlight and null if not.

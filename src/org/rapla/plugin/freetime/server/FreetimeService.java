@@ -2,16 +2,16 @@ package org.rapla.plugin.freetime.server;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.rapla.components.util.DateTools;
-import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.domain.internal.AppointmentImpl;
 import org.rapla.facade.AllocationChangeEvent;
 import org.rapla.facade.AllocationChangeListener;
 import org.rapla.facade.RaplaComponent;
@@ -56,7 +56,7 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
 		}
     }
     
-    public String[][] getHolidayConflicts(Appointment[] appointments)
+    public HolidayMap getHolidayConflicts(List<AppointmentImpl> appointments)
     {
     	SortedMap<Date, String> map = new TreeMap<Date, String>();
     	synchronized (cache) {
@@ -78,36 +78,34 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
     			}
     		}
     	}
-		String[][] result = serialize(map);
-    	return result;
+    	return new HolidayMap(map);
     } 
     
-    public String[][] getHolidays(Date from, Date till) 
+    public HolidayMap getHolidays(Date from, Date till) 
     {
 		synchronized (cache) {
 			SortedMap<Date, String> map = cache;
-			String[][] result = serialize(map);
-			return result;
+			return new HolidayMap(map);
 		}
     }
 
-	protected String[][] serialize(SortedMap<Date, String> map) {
-		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( );
-		Set<Date> keySet = map.keySet();
-		String[][] result = new String[keySet.size()][2]; 
-		int i=0;
-		for (Date date:keySet)
-		{
-			result[i] = new String[2];
-			result[i][0] = dateParser.formatDate(date);
-			String name = map.get( date);
-			String remoteServiceSaveName = name.replaceAll("[\\{,\\},\\,]", "");
-			result[i][1] = remoteServiceSaveName;
-			i++;
-		}
-		
-		return result;
-	}
+//	protected String[][] serialize(SortedMap<Date, String> map) {
+//		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( );
+//		Set<Date> keySet = map.keySet();
+//		String[][] result = new String[keySet.size()][2]; 
+//		int i=0;
+//		for (Date date:keySet)
+//		{
+//			result[i] = new String[2];
+//			result[i][0] = dateParser.formatDate(date);
+//			String name = map.get( date);
+//			String remoteServiceSaveName = name.replaceAll("[\\{,\\},\\,]", "");
+//			result[i][1] = remoteServiceSaveName;
+//			i++;
+//		}
+//		
+//		return result;
+//	}
 
 	public void changed(AllocationChangeEvent[] changeEvents) {
 		boolean update = false;

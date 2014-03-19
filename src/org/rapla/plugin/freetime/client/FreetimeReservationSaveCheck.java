@@ -1,18 +1,19 @@
 package org.rapla.plugin.freetime.client;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.rapla.components.layout.TableLayout;
-import org.rapla.components.util.SerializableDateTimeFormat;
-import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.domain.internal.AppointmentImpl;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
@@ -24,32 +25,32 @@ import org.rapla.plugin.freetime.FreetimeServiceRemote;
 
 public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {
 
-    public FreetimeReservationSaveCheck(RaplaContext context) {
+	FreetimeServiceRemote webservice;
+    public FreetimeReservationSaveCheck(RaplaContext context, FreetimeServiceRemote webservice) {
         super(context);
         setChildBundleName(FreetimePlugin.RESOURCE_FILE);
+        this.webservice = webservice;
     }
-    protected Map<Date, String> toMap(String[][] holidays) {
-		Map<Date,String> map = new TreeMap<Date, String>();
-		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( );
-		for (String[] holiday:holidays)
-		{
-			String dateString = holiday[0];
-			try {
-				Date date = dateParser.parseDate(dateString,false);
-				String name = holiday[1];
-				map.put( date, name);
-			} catch (Exception e) {
-				getLogger().warn("Can't parse date of holiday " + dateString + " Ignoring." );
-			}
-		}
-		return map;
-	}
+//    protected Map<Date, String> toMap(String[][] holidays) {
+//		Map<Date,String> map = new TreeMap<Date, String>();
+//		SerializableDateTimeFormat dateParser = new SerializableDateTimeFormat( );
+//		for (String[] holiday:holidays)
+//		{
+//			String dateString = holiday[0];
+//			try {
+//				Date date = dateParser.parseDate(dateString,false);
+//				String name = holiday[1];
+//				map.put( date, name);
+//			} catch (Exception e) {
+//				getLogger().warn("Can't parse date of holiday " + dateString + " Ignoring." );
+//			}
+//		}
+//		return map;
+//	}
     
     public boolean check(Reservation reservation, Component sourceComponent) throws RaplaException {
-        Appointment[] appointments = reservation.getAppointments();
-        FreetimeServiceRemote webservice = getWebservice(FreetimeServiceRemote.class);
-        String[][] holidays = webservice.getHolidayConflicts(appointments);
-        Map<Date, String> holidayMap = toMap(holidays);
+        List<AppointmentImpl> appointmentsImpl = new ArrayList(Arrays.asList( reservation.getAppointments()));
+		Map<Date, String> holidayMap = webservice.getHolidayConflicts(appointmentsImpl).get();
         boolean result = true;
         // HashMap Length > 0 => At least one Appointment overlaps with freetime
         if(!holidayMap.isEmpty()){
