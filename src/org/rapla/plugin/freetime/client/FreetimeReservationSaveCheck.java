@@ -21,6 +21,7 @@ import org.rapla.gui.ReservationCheck;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.plugin.freetime.FreetimePlugin;
 import org.rapla.plugin.freetime.FreetimeServiceRemote;
+import org.rapla.plugin.freetime.FreetimeServiceRemote.Holiday;
 
 
 public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements ReservationCheck {
@@ -50,10 +51,10 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
     
     public boolean check(Reservation reservation, Component sourceComponent) throws RaplaException {
         List<AppointmentImpl> appointmentsImpl = new ArrayList(Arrays.asList( reservation.getAppointments()));
-		Map<Date, String> holidayMap = webservice.getHolidayConflicts(appointmentsImpl).get();
+		List<Holiday> holidayList = webservice.getHolidayConflicts(appointmentsImpl);
         boolean result = true;
         // HashMap Length > 0 => At least one Appointment overlaps with freetime
-        if(!holidayMap.isEmpty()){
+        if(!holidayList.isEmpty()){
             // Analog zu Konflikten Dialog aufbauen
             JPanel contentFreetime = new JPanel();
             contentFreetime.setLayout(new TableLayout(new double[][] {
@@ -65,7 +66,7 @@ public class FreetimeReservationSaveCheck extends RaplaGUIComponent implements R
             //warningLabel.setForeground(java.awt.Color.red);
             contentFreetime.add(warningLabel,"0,1");
            
-            FreetimeConflictUI freetimeConflicts = new FreetimeConflictUI(getContext(),holidayMap);
+            FreetimeConflictUI freetimeConflicts = new FreetimeConflictUI(getContext(),holidayList);
             contentFreetime.add(freetimeConflicts.getComponent(),"0,2");
             //todo: i18n
             DialogUI dialog = DialogUI.create(

@@ -2,29 +2,23 @@ package org.rapla.plugin.freetime;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.jws.WebService;
 
 import org.rapla.entities.domain.internal.AppointmentImpl;
+import org.rapla.rest.gwtjsonrpc.common.ResultType;
 
 @WebService
 public interface FreetimeServiceRemote {
-    HolidayMap getHolidays(Date from, Date till);
+    @ResultType(value=Holiday.class,container=List.class)
+    List<Holiday> getHolidays(Date from, Date till);
     long getHolidayRepositoryVersion();
+    @ResultType(value=Holiday.class,container=List.class)
+    List<Holiday> getHolidayConflicts(List<AppointmentImpl> appointments);
 
-    HolidayMap getHolidayConflicts(List<AppointmentImpl> appointments);
-    public class HolidayMap
+    public class Holiday
     {
-    	Map<Date, String> map;
-    	public HolidayMap(Map<Date, String> map) {
-    		this.map = map;
-		}
-    	HolidayMap() {
-		}
-    	public Map<Date, String> get() 
-    	{
-			return map;
-		}
+    	public Date date;
+    	public String name;
     }
 }

@@ -1,9 +1,11 @@
 package org.rapla.plugin.freetime.server;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -56,7 +58,7 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
 		}
     }
     
-    public HolidayMap getHolidayConflicts(List<AppointmentImpl> appointments)
+    public List<Holiday> getHolidayConflicts(List<AppointmentImpl> appointments)
     {
     	SortedMap<Date, String> map = new TreeMap<Date, String>();
     	synchronized (cache) {
@@ -78,15 +80,28 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
     			}
     		}
     	}
-    	return new HolidayMap(map);
+    	return makeList(map);
     } 
     
-    public HolidayMap getHolidays(Date from, Date till) 
+    public List<Holiday> getHolidays(Date from, Date till) 
     {
 		synchronized (cache) {
 			SortedMap<Date, String> map = cache;
-			return new HolidayMap(map);
+			return makeList(map);
 		}
+    }
+
+    private List<Holiday> makeList(SortedMap<Date, String> map) 
+    {
+        List<Holiday> list = new ArrayList<Holiday>();
+        for ( Map.Entry<Date, String> entry:map.entrySet())
+        {
+            Holiday holiday = new Holiday();
+            holiday.date = entry.getKey();
+            holiday.name = entry.getValue();
+            list.add( holiday);
+        }
+        return list;
     }
 
 //	protected String[][] serialize(SortedMap<Date, String> map) {

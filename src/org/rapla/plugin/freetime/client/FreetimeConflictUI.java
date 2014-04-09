@@ -12,16 +12,22 @@
  *--------------------------------------------------------------------------*/
 package org.rapla.plugin.freetime.client;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.gui.toolkit.RaplaWidget;
 import org.rapla.plugin.freetime.FreetimePlugin;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.Date;
-import java.util.Map;
+import org.rapla.plugin.freetime.FreetimeServiceRemote.Holiday;
 
 public class FreetimeConflictUI extends RaplaComponent
     implements RaplaWidget
@@ -29,7 +35,7 @@ public class FreetimeConflictUI extends RaplaComponent
     JPanel content = new JPanel();
     JTable jTable1 = new JTable();
 
-    public FreetimeConflictUI(RaplaContext context,Map<Date,String> onFreetime) {
+    public FreetimeConflictUI(RaplaContext context,List<Holiday> onFreetime) {
         super(context);
         setChildBundleName(FreetimePlugin.RESOURCE_FILE);
     	content.setLayout(new BorderLayout());
@@ -38,10 +44,10 @@ public class FreetimeConflictUI extends RaplaComponent
         content.add(scrollPane,BorderLayout.CENTER);
         Object[][] data = new Object[onFreetime.size()][2];
         int i=0;
-        for ( Date date: onFreetime.keySet())
+        for ( Holiday holiday:onFreetime)
         {
-        	String name = onFreetime.get( date);
-        	data[i][0] = getRaplaLocale().formatDate(date);
+        	String name = holiday.name;
+        	data[i][0] = getRaplaLocale().formatDate(holiday.date);
         	data[i][1] = name;
         	i++;
         }

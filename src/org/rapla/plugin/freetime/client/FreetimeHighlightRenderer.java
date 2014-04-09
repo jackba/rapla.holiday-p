@@ -15,7 +15,8 @@ package org.rapla.plugin.freetime.client;
 
 import java.awt.Color;
 import java.util.Date;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -30,6 +31,7 @@ import org.rapla.framework.RaplaLocale;
 import org.rapla.gui.internal.RaplaDateRenderer;
 import org.rapla.plugin.freetime.FreetimePlugin;
 import org.rapla.plugin.freetime.FreetimeServiceRemote;
+import org.rapla.plugin.freetime.FreetimeServiceRemote.Holiday;
 
 /** Renders holidays in a special color. */
 public class FreetimeHighlightRenderer extends RaplaDateRenderer implements ModificationListener  
@@ -62,8 +64,13 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	        Date start = null;
 			Date end = null;
 			cache.clear();
-	        Map<Date, String> map = webservice.getHolidays(start, end).get();
-	        cache.putAll( map);
+	        List<Holiday> list = webservice.getHolidays(start, end);
+	        Iterator<Holiday> it = list.iterator();
+	        while (it.hasNext())
+	        {
+	            Holiday holiday = it.next();
+	            cache.put( holiday.date, holiday.name);
+	        }
 	        holidayRepositoryVersion = version;
 	        invalidateInterval = null;
         }
