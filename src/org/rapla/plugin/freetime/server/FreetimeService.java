@@ -10,6 +10,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.rapla.components.util.DateTools;
+import org.rapla.entities.configuration.Preferences;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
@@ -20,16 +21,19 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
+import org.rapla.framework.TypedComponentRole;
 import org.rapla.plugin.freetime.FreetimePlugin;
 import org.rapla.plugin.freetime.FreetimeServiceRemote;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
+import org.rapla.storage.impl.server.LocalAbstractCachableOperator;
 
 public class FreetimeService extends RaplaComponent implements AllocationChangeListener, FreetimeServiceRemote, RemoteMethodFactory<FreetimeServiceRemote> {
 
+    TypedComponentRole<String> LAST_FREETIME_CHANGE_HASH = new TypedComponentRole<String>("org.rapla.plugin.freetimeChangeHash");
+    
     private SortedMap<Date, String> cache = Collections.synchronizedSortedMap(new TreeMap<Date, String>());
     Allocatable freetime = null;
-    long repositoryVersion = 0;
 
     public FreetimeService(RaplaContext context, Configuration config) throws RaplaException {
         super(context);
@@ -38,6 +42,8 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
     }
 
     private void updateHolidays() throws RaplaException {
+        String hash = getQuery().getSystemPreferences().getEntryAsString( LAST_FREETIME_CHANGE_HASH, null);
+        StringBuilder hashableString = new StringBuilder();
         synchronized (cache) {
          	cache.clear();
             final Allocatable[] list = getClientFacade().getAllocatables(null);
@@ -51,11 +57,27 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
                 Allocatable[] filter = {freetime};
                 Reservation[] foundHolidays = getClientFacade().getReservations(filter, null, null);
                 for (Reservation foundHoliday : foundHolidays) {
-                    cache.put(foundHoliday.getFirstDate(), foundHoliday.getName(getRaplaLocale().getLocale()));
+                    Date firstDate = foundHoliday.getFirstDate();
+                    String name = foundHoliday.getName(getRaplaLocale().getLocale());
+                    cache.put(firstDate, name);
+                    hashableString.append( firstDate.getTime());
+                    hashableString.append( name);
                 }
             }
-            repositoryVersion++;
 		}
+        String newHash = LocalAbstractCachableOperator.encrypt("sha-1",hashableString.toString());
+        if ( hash == null || !newHash.equals(hash))
+        {
+            // only write if there were previous holidays
+            if ( hash != null || !cache.isEmpty())
+            {
+                Preferences edit = getModification().edit( getQuery().getSystemPreferences());
+                edit.putEntry(FreetimeServiceRemote.LAST_FREETIME_CHANGE, getRaplaLocale().getSerializableFormat().formatTimestamp( getClientFacade().getOperator().getCurrentTimestamp()));
+                edit.putEntry(LAST_FREETIME_CHANGE_HASH, newHash);
+                getModification().store( edit);
+            }
+        }
+
     }
     
     public List<Holiday> getHolidayConflicts(List<AppointmentImpl> appointments)
@@ -142,12 +164,7 @@ public class FreetimeService extends RaplaComponent implements AllocationChangeL
 		}
 	}
 
-	public long getHolidayRepositoryVersion() 
-	{
-		return repositoryVersion;
-	}
-	
-    public FreetimeServiceRemote createService(RemoteSession remoteSession) {
+	public FreetimeServiceRemote createService(RemoteSession remoteSession) {
         return this;  
     }
 }

@@ -21,27 +21,26 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.rapla.components.calendar.DateRendererAdapter;
-import org.rapla.components.util.TimeInterval;
-import org.rapla.facade.ModificationEvent;
-import org.rapla.facade.ModificationListener;
+import org.rapla.components.util.DateTools;
+import org.rapla.components.util.ParseDateException;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.framework.RaplaLocale;
+import org.rapla.framework.TypedComponentRole;
 import org.rapla.gui.internal.RaplaDateRenderer;
 import org.rapla.plugin.freetime.FreetimePlugin;
 import org.rapla.plugin.freetime.FreetimeServiceRemote;
 import org.rapla.plugin.freetime.FreetimeServiceRemote.Holiday;
 
 /** Renders holidays in a special color. */
-public class FreetimeHighlightRenderer extends RaplaDateRenderer implements ModificationListener  
+public class FreetimeHighlightRenderer extends RaplaDateRenderer 
 {
 	private static final int INVALIDATE_IN_MILLIS = 30000;
-	long holidayRepositoryVersion = 0;
-	TimeInterval invalidateInterval;
+	Date holidayRepositoryVersion = null;
 	private SortedMap<Date, String> cache = new TreeMap<Date, String>();
-	private long lastCachedTime;
 	Configuration config;
+	
 	/**
 	 * 
 	 * @param context
@@ -51,16 +50,26 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	public FreetimeHighlightRenderer(RaplaContext context, Configuration config,FreetimeServiceRemote webservice) throws RaplaException {
 		super(context);
 		this.webservice = webservice;
-		getUpdateModule().addModificationListener( this);
 		updateCache();
 		this.config = config;
 	}
 	
-	private void updateCache() throws RaplaException
+	synchronized private void updateCache() throws RaplaException
 	{
-        long version = webservice.getHolidayRepositoryVersion();
-        if ( version > holidayRepositoryVersion)
-        {
+	    String entry = getQuery().getSystemPreferences().getEntryAsString( FreetimeServiceRemote.LAST_FREETIME_CHANGE, null);
+	    Date lastChanged = null;
+	    if (entry != null)
+	    {
+	        try {
+                lastChanged = getRaplaLocale().getSerializableFormat().parseTimestamp( entry);
+            } catch (ParseDateException e) {
+                throw new RaplaException( e.getMessage() , e);
+            }
+	    }
+        if ( holidayRepositoryVersion == null || (lastChanged != null && lastChanged.after(holidayRepositoryVersion))) 
+	    {
+	        
+            // we set the cached time to the start in case anything happens during cast
 	        Date start = null;
 			Date end = null;
 			cache.clear();
@@ -69,16 +78,17 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
 	        while (it.hasNext())
 	        {
 	            Holiday holiday = it.next();
-	            cache.put( holiday.date, holiday.name);
+	            cache.put( DateTools.cutDate(holiday.date), holiday.name);
 	        }
-	        holidayRepositoryVersion = version;
-	        invalidateInterval = null;
-        }
-        if ( System.currentTimeMillis() - INVALIDATE_IN_MILLIS > 5000)
-        {
-            invalidateInterval = null;
-        }
-        lastCachedTime = System.currentTimeMillis();
+            if ( lastChanged == null)
+            {
+                holidayRepositoryVersion = getClientFacade().getOperator().getCurrentTimestamp();
+            }
+            else
+            {
+                holidayRepositoryVersion = lastChanged;
+            }
+	    }
    }
 
 	/**
@@ -89,10 +99,8 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
         try {
         	RaplaLocale raplaLocale = getRaplaLocale();
         	// if five seconds passed since last check, check again
-        	if (System.currentTimeMillis() - lastCachedTime > INVALIDATE_IN_MILLIS || invalidateInterval != null )
-        	{
-        		updateCache();
-        	}
+        	updateCache();
+        	
         	// We need to add a DateRendererAdapter hack to make the semantic change in RenderingInfo in 1.8 work for 1.7 as well 
 			DateRendererAdapter dateRendererAdapter = new DateRendererAdapter( this, raplaLocale.getTimeZone(), raplaLocale.getLocale())
 			{
@@ -120,20 +128,4 @@ public class FreetimeHighlightRenderer extends RaplaDateRenderer implements Modi
         return renderingInfo;
 	}
 
-	@Override
-	public void dataChanged(ModificationEvent evt) throws RaplaException {
-		TimeInterval interval = evt.getInvalidateInterval();
-		if ( interval != null)
-		{
-			if ( invalidateInterval != null)
-			{
-				invalidateInterval = invalidateInterval.union( interval);
-			}
-			else
-			{
-				invalidateInterval = interval;
-			}
-		}
-	}	
-	
 }

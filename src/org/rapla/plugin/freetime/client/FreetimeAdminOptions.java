@@ -19,7 +19,6 @@ public class FreetimeAdminOptions extends DefaultPluginOption {
         super(raplaContext);
         setChildBundleName(FreetimePlugin.RESOURCE_FILE);
         initJComponents();
-
     }
 
 

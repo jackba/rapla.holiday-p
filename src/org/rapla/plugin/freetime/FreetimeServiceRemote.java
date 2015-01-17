@@ -6,13 +6,15 @@ import java.util.List;
 import javax.jws.WebService;
 
 import org.rapla.entities.domain.internal.AppointmentImpl;
+import org.rapla.framework.TypedComponentRole;
 import org.rapla.rest.gwtjsonrpc.common.ResultType;
 
 @WebService
 public interface FreetimeServiceRemote {
+    TypedComponentRole<String> LAST_FREETIME_CHANGE = new TypedComponentRole<String>("org.rapla.plugin.freetimeChange");
+    
     @ResultType(value=Holiday.class,container=List.class)
     List<Holiday> getHolidays(Date from, Date till);
-    long getHolidayRepositoryVersion();
     @ResultType(value=Holiday.class,container=List.class)
     List<Holiday> getHolidayConflicts(List<AppointmentImpl> appointments);
 
