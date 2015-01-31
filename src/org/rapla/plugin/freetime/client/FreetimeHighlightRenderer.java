@@ -36,7 +36,6 @@ import org.rapla.plugin.freetime.FreetimeServiceRemote.Holiday;
 /** Renders holidays in a special color. */
 public class FreetimeHighlightRenderer extends RaplaDateRenderer 
 {
-	private static final int INVALIDATE_IN_MILLIS = 30000;
 	Date holidayRepositoryVersion = null;
 	private SortedMap<Date, String> cache = new TreeMap<Date, String>();
 	Configuration config;

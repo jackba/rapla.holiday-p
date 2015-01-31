@@ -11,7 +11,7 @@ import org.rapla.rest.gwtjsonrpc.common.ResultType;
 
 @WebService
 public interface FreetimeServiceRemote {
-    TypedComponentRole<String> LAST_FREETIME_CHANGE = new TypedComponentRole<String>("org.rapla.plugin.freetimeChange");
+    TypedComponentRole<String> LAST_FREETIME_CHANGE = new TypedComponentRole<String>("org.rapla.plugin.freetime.last_change");
     
     @ResultType(value=Holiday.class,container=List.class)
     List<Holiday> getHolidays(Date from, Date till);

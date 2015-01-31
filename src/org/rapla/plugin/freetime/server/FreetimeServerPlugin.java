@@ -13,7 +13,7 @@ public class FreetimeServerPlugin  implements PluginDescriptor<ServerServiceCont
 
  
         public void provideServices(ServerServiceContainer container, Configuration config) throws RaplaContextException {
-            container.addContainerProvidedComponent(FreetimePlugin.RESOURCE_FILE, I18nBundleImpl.class, I18nBundleImpl.createConfig(FreetimePlugin.RESOURCE_FILE.getId()));
+            container.addResourceFile(FreetimePlugin.RESOURCE_FILE);
             if (!config.getAttributeAsBoolean("enabled", FreetimePlugin.ENABLE_BY_DEFAULT)) {
                 return;
             }
